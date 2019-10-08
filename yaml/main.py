@@ -232,7 +232,7 @@ if __name__ == '__main__':
     web = ['web',
            ]
     zabbix = ['zabbix',
-              '172.16.5.37']
+              '10.0.0.170']
     ansible_path = '/etc/ansible/hosts'
     mysql_path = 'mysql/conf/'
     nfs_path = 'nfs/conf/'
