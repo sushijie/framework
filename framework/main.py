@@ -288,14 +288,18 @@ class set:
             print(err)
             return False
 
-    def waitting(self):
-        try:
-            res = os.popen('cat /root/.jenkins/workspace/test/tmp|wc -l').read()
-            print('job is finsh', res,'wait for 10s')
-            if res < 6:
-                time.sleep(10)
-        except Exception:
-            pass
+    def waiting(self):
+        while 1:
+            try:
+                res = os.popen('cat /root/.jenkins/workspace/test/tmp|wc -l').read()
+                print(res,'in 6 job is finshed wait others for 10s')
+                time.sleep(1)
+                if res < 6:
+                    time.sleep(10)
+                else:
+                    quit(0)
+            except Exception:
+                pass
 
 if __name__ == '__main__':
     net = ['net',
@@ -303,7 +307,7 @@ if __name__ == '__main__':
     db = ['db',
           ]
     lb = ['lb',
-          '192.168.255.148']
+          ]
     nfs = ['nfs',
            ]
     rsync = ['rsync',
@@ -311,7 +315,7 @@ if __name__ == '__main__':
     web = ['web',
            ]
     zabbix = ['zabbix',
-              ]
+              '10.0.0.170']
     ansible_path = '/etc/ansible/hosts'
     # ansible_path = 'hosts'
     mysql_path = 'mysql/conf/'
@@ -325,8 +329,8 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == 'test':
         s.test()
         print('server test done')
-    elif len(sys.argv) > 1 and sys.argv[1] == 'waitting':
-        s.waitting()
+    elif len(sys.argv) > 1 and sys.argv[1] == 'wait':
+        s.waiting()
     else:
         s.ansible(ansible_path)
         s.mysql(mysql_path)
