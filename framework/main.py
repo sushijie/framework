@@ -258,12 +258,8 @@ class set:
             if res == 'active (running)':
                 return True
             else:
-                try:
-                    pass
-                except Exception:
-                    pass
-                finally:
-                    raise NameError('server is down')
+                os.system('exit 1')
+
 
 
         servers = {'db': 'mysqld', 'lb': ['nginx', 'keepalived'], 'web': ['nginx', 'php-fpm,nfs'],
