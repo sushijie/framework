@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 
-import os, sys, re, time
+import os, sys, re, time,sys
+
 try:
     import paramiko
 except:
     import os
+
     os.system('pip3 install paramiko')
     import paramiko
 bash_path = os.path.abspath(os.path.dirname(os.getcwd()))
@@ -19,7 +21,8 @@ class set:
         self.rsync = rsync
         self.web = web
         self.zabbix = zabbix
-        pass
+
+
 
     def get_server(self, server):
         lis1 = []
@@ -125,12 +128,11 @@ class set:
         pass
 
     def web01(self, path):
-        database = path +'database.php'
+        database = path + 'database.php'
 
         wp = path + 'wp-config.php'
 
         dicdb = s.get_server(self.db)
-
 
         s.cheageip(database, dicdb)
 
@@ -143,15 +145,17 @@ class set:
         s.cheageip(zabbix_conf, dicdb)
         s.cheageip(zabbix_server, dicdb)
 
-    def get_all_ip(self,path):
+    def get_all_ip(self, path):
         self.allip = []
+
         def get_ip(lis):
             for dic in lis:
                 for key in dic:
-                    lis = [key[1:-1], dic[key]]
-                    self.allip.append(lis)
+                    lis_ip = [key[1:-1], dic[key]]
+                    self.allip.append(lis_ip)
                     f1.write(str(dic[key]))
                     f1.write('\n')
+
         ip_txt = path
         server = [self.db, self.lb, self.nfs, self.rsync, self.web, self.zabbix]
         lis = []
@@ -160,48 +164,74 @@ class set:
                 pass
             else:
                 lis.append(s.get_server(server[i]))
-        f = open(ip_txt, mode='r', encoding="utf-8")
         f1 = open('tmp', mode='a', encoding="utf-8")
         get_ip(lis)
-        f.close()
         f1.close()
-        os.remove(ip_txt)
+        try:
+            os.remove(ip_txt)
+        except Exception:
+            pass
         os.rename('tmp', ip_txt)
 
-    def yaml_(self, path):
-        ip_txt = path + 'ip.txt'
-        fst = path + 'web01.yaml'
-        main_yaml = path + 'main.yaml'
-        dicfst = s.get_server(self.nfs)
-
+    # def yaml_(self, path):
+    #     ip_txt = path + 'ip.txt'
+    #     fst = path + 'web01.yaml'
+    #     main_yaml = path + 'main.yaml'
+    #     dicfst = s.get_server(self.nfs)
+    #
+    #     s.get_all_ip(ip_txt)
+    #     s.cheageip(fst, dicfst, num=2)
+    #
+    #     f2 = open('tmp', mode='a', encoding="utf-8")
+    #     server = [self.db, self.lb, self.nfs, self.rsync, self.web, self.zabbix]
+    #     for i in range(len(server)):
+    #         for j in range(len(server[i])):
+    #             if j >= 1:
+    #                 ser = server[i][0]+'0'+str(j)
+    #                 f2.write('- import_playbook: %s.yaml' % ser)
+    #                 f2.write('\n')
+    #
+    #     f2.close()
+    #     os.remove(main_yaml)
+    #     os.rename('tmp', main_yaml)
+    #     # - import_playbook: db01.yaml
+    #     # - import_playbook: db02.yaml
+    #     # - import_playbook: lb01.yaml
+    #     # - import_playbook: lb02.yaml
+    #     # - import_playbook: nfs01.yaml
+    #     # - import_playbook: rsync01.yaml
+    #     # - import_playbook: web01.yaml
+    #     # - import_playbook: web03.yaml
+    #     # - import_playbook: db03.yaml
+    #     # - import_playbook: zabbix01.yaml
+    def yaml_shell(self, path):
+        ip_txt = 'yaml/ip.txt'
         s.get_all_ip(ip_txt)
+
+        fst = path + 'web01.yaml'
+        build_path = 'yaml.sh'
+        dicfst = s.get_server(self.nfs)
         s.cheageip(fst, dicfst, num=2)
 
-        f2 = open('tmp', mode='a', encoding="utf-8")
+        f2 = open('tmp', mode='a', encoding="gbk")
         server = [self.db, self.lb, self.nfs, self.rsync, self.web, self.zabbix]
+        f2.write('#!/bin/bash\n\ncase $1 in\n')
+
         for i in range(len(server)):
             for j in range(len(server[i])):
                 if j >= 1:
-                    ser = server[i][0]+'0'+str(j)
-                    f2.write('- import_playbook: %s.yaml' % ser)
-                    f2.write('\n')
-
+                    ser = server[i][0] + '0' + str(j)
+                    f2.write('%s)\nansible-playbook yaml/%s.yaml\n;;\n' % (ser, ser))
+        f2.write('*)\nnot thing to do!\n;;\nesac\n')
         f2.close()
-        os.remove(main_yaml)
-        os.rename('tmp', main_yaml)
-        # - import_playbook: db01.yaml
-        # - import_playbook: db02.yaml
-        # - import_playbook: lb01.yaml
-        # - import_playbook: lb02.yaml
-        # - import_playbook: nfs01.yaml
-        # - import_playbook: rsync01.yaml
-        # - import_playbook: web01.yaml
-        # - import_playbook: web03.yaml
-        # - import_playbook: db03.yaml
-        # - import_playbook: zabbix01.yaml
-
+        try:
+            os.remove(build_path)
+        except Exception:
+            pass
+        os.rename('tmp', build_path)
 
     def hostname(self):
+        # print(self.allip) [['db01', '10.0.0.171'], ['lb01', '10.0.0.172'], ['nfs01', '10.0.0.173'], ['rsync01', '10.0.0.174'], ['web01', '10.0.0.175'], ['zabbix01', '10.0.0.170']]
         try:
             for ip in self.allip:
                 try:
@@ -217,6 +247,55 @@ class set:
         except Exception as err:
             return False
 
+    def test(self):
+        ip_txt = 'yaml/ip.txt'
+        s.get_all_ip(ip_txt)
+        def get_result(server,ip):
+            stdin, stdout, stderr = client.exec_command('systemctl status %s' % server)
+            res = re.findall(r'active \(\w+\)', stdout.read().decode())
+            res = res[0]
+            print('The server %s in %s is %s' % (server, ip, res))
+            if res == 'active (running)':
+                return True
+            else:
+                try:
+                    pass
+                except Exception:
+                    pass
+                finally:
+                    raise NameError('server is down')
+
+
+        servers = {'db': 'mysqld', 'lb': ['nginx', 'keepalived'], 'web': ['nginx', 'php-fpm,nfs'],
+                   'nfs': ['nfs', 'rsyncd'],
+                   'rsync': ['rpcbind', 'rsyncd'], 'zabbix': ['zabbix-agent', 'zabbix-server', 'httpd'], }
+        try:
+            for ip in self.allip:
+                client = paramiko.SSHClient()
+                client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                client.connect(hostname=ip[1], username='root', password='1')
+                servername = re.findall(r'\D+', ip[0])
+                if len(servers[servername[0]]) > 1:
+                    for num in range(len(servers[servername[0]])):
+                        server = servers[servername[0]][num]
+                        get_result(server,ip[1])
+
+                else:
+                    server = servers[servername]
+                    get_result(server,ip[1])
+                client.close()
+        except Exception as err:
+            print(err)
+            return False
+
+    def waitting(self):
+        try:
+            res = os.popen('cat /root/.jenkins/workspace/test/tmp|wc -l').read()
+            print('job is finsh', res,'wait for 10s')
+            if res < 6:
+                time.sleep(10)
+        except Exception:
+            pass
 
 if __name__ == '__main__':
     net = ['net',
@@ -224,7 +303,7 @@ if __name__ == '__main__':
     db = ['db',
           ]
     lb = ['lb',
-          ]
+          '192.168.255.148']
     nfs = ['nfs',
            ]
     rsync = ['rsync',
@@ -232,8 +311,9 @@ if __name__ == '__main__':
     web = ['web',
            ]
     zabbix = ['zabbix',
-              '10.0.0.170']
+              ]
     ansible_path = '/etc/ansible/hosts'
+    # ansible_path = 'hosts'
     mysql_path = 'mysql/conf/'
     nfs_path = 'nfs/conf/'
     web01_path = 'web01/conf/'
@@ -241,16 +321,24 @@ if __name__ == '__main__':
     yaml_path = 'yaml/'
     # try:
     s = set(db, lb, nfs, rsync, web, zabbix)
-    s.ansible(ansible_path)
-    s.mysql(mysql_path)
-    s.nfs_(nfs_path, net)
-    s.web01(web01_path)
-    s.zabbix01(zabbix_path)
-    s.yaml_(yaml_path)
-    if s.hostname():
-        print('set-hostname successful')
+
+    if len(sys.argv) > 1 and sys.argv[1] == 'test':
+        s.test()
+        print('server test done')
+    elif len(sys.argv) > 1 and sys.argv[1] == 'waitting':
+        s.waitting()
     else:
-        print('set-hostname false')
-    print('All successful')
+        s.ansible(ansible_path)
+        s.mysql(mysql_path)
+        s.nfs_(nfs_path, net)
+        s.web01(web01_path)
+        s.zabbix01(zabbix_path)
+        s.yaml_shell(yaml_path)
+        if s.hostname():
+            print('set-hostname successful')
+        else:
+            print('set-hostname false')
+
+        print('All done')
     # except Exception as err:
     #     print('false')
