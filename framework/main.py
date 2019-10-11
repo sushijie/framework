@@ -258,7 +258,7 @@ class set:
             if res == 'active (running)':
                 return True
             else:
-                os.system('exit 1')
+                The server dowm
 
 
 
