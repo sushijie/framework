@@ -258,7 +258,12 @@ class set:
             if res == 'active (running)':
                 return True
             else:
-                The server dowm
+                try:
+                    pass
+                except Exception:
+                    pass
+                finally:
+                    raise NotImplemented
 
 
 
