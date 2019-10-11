@@ -1,0 +1,35 @@
+pipeline{
+    agent any
+    stages{
+        stage('get_core'){
+            steps{
+                git 'https://github.com/sushijie/framework.git'
+            }
+        }
+        stage('Setting'){
+            steps{
+                sh "echo 'Setting' > tmp"
+                sh 'mv -f "/root/.jenkins/workspace/sushijie/framework/main.py" "/data/main.py"'
+                sh 'cd "/data";python3 "main.py"'
+                sh 'cd "/data/yaml";sh "ssh.sh"'
+           }
+        }
+        stage('Build'){
+           steps{
+            build job: 'db01' , wait: false
+            build job: 'lb01' , wait: false
+            build job: 'nfs01' , wait: false
+            build job: 'rsync01' , wait: false
+            build job: 'web01' , wait: false
+            build job: 'zabbix01' , wait: false
+            sh 'cd "/data";python3 "main.py" waiting'
+           }
+        }
+        stage('test'){
+            steps{
+                sh 'cd "/data";python3 "main.py" test'
+
+            }
+        }
+    }
+}
