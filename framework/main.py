@@ -260,7 +260,7 @@ class set:
                 return True
             else:
 
-                f.write('%s\n' % res)
+                f.write('The server %s in %s is %s\n' % (server, ip, res))
 
         servers = {'db': 'mysqld', 'lb': ['nginx', 'keepalived'], 'web': ['nginx', 'php-fpm,nfs'],
                    'nfs': ['nfs', 'rsyncd'],
