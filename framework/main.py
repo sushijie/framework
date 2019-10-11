@@ -222,7 +222,7 @@ class set:
                 if j >= 1:
                     ser = server[i][0] + '0' + str(j)
                     f2.write('%s)\nansible-playbook yaml/%s.yaml\n;;\n' % (ser, ser))
-        f2.write('*)\nnot thing to do!\n;;\nesac\n')
+        f2.write('*)\necho "not thing to do!"\n;;\nesac\n')
         f2.close()
         try:
             os.remove(build_path)
@@ -325,12 +325,14 @@ if __name__ == '__main__':
     yaml_path = 'yaml/'
     # try:
     s = set(db, lb, nfs, rsync, web, zabbix)
-
-    if len(sys.argv) > 1 and sys.argv[1] == 'test':
-        s.test()
-        print('server test done')
-    elif len(sys.argv) > 1 and sys.argv[1] == 'wait':
-        s.waiting()
+    if len(sys.argv) > 1 and hasattr(s, sys.argv[1]):
+        getattr(s, sys.argv[1])()
+        print('server %s done' % sys.argv[1])
+    # if len(sys.argv) > 1 and sys.argv[1] == 'test':
+    #     s.test()
+    #     print('server test done')
+    # elif len(sys.argv) > 1 and sys.argv[1] == 'wait':
+    #     s.waiting()
     else:
         s.ansible(ansible_path)
         s.mysql(mysql_path)
@@ -344,5 +346,4 @@ if __name__ == '__main__':
             print('set-hostname false')
 
         print('All done')
-    # except Exception as err:
-    #     print('false')
+
