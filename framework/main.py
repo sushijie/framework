@@ -199,7 +199,7 @@ class set:
         # - import_playbook: web03.yaml
         # - import_playbook: db03.yaml
         # - import_playbook: zabbix01.yaml
-        pass
+
 
     def hostname(self):
         try:
