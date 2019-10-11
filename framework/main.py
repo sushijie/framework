@@ -250,6 +250,7 @@ class set:
     def test(self):
         ip_txt = 'yaml/ip.txt'
         s.get_all_ip(ip_txt)
+        f = open('result', mode='a', encoding="utf-8")
         def get_result(server,ip):
             stdin, stdout, stderr = client.exec_command('systemctl status %s' % server)
             res = re.findall(r'active \(\w+\)', stdout.read().decode())
@@ -258,14 +259,8 @@ class set:
             if res == 'active (running)':
                 return True
             else:
-                try:
-                    pass
-                except Exception:
-                    pass
-                finally:
-                    raise NotImplemented
 
-
+                f.write('%s\n' % res)
 
         servers = {'db': 'mysqld', 'lb': ['nginx', 'keepalived'], 'web': ['nginx', 'php-fpm,nfs'],
                    'nfs': ['nfs', 'rsyncd'],
@@ -285,9 +280,11 @@ class set:
                     server = servers[servername]
                     get_result(server,ip[1])
                 client.close()
+
         except Exception as err:
             print(err)
             return False
+        f.close()
 
     def waiting(self):
         wait = True
