@@ -289,15 +289,16 @@ class set:
             return False
 
     def waiting(self):
-        while 1:
+        wait = True
+        while wait:
             try:
                 res = os.popen('cat /root/.jenkins/workspace/sushijie/tmp|wc -l').read()
-                print(res,'in 6 job is finshed wait others for 10s')
+                print(res,'in 7 job is finshed wait others for 40s')
                 time.sleep(1)
                 if res < 7:
-                    time.sleep(10)
+                    time.sleep(40)
                 else:
-                    quit(0)
+                    wait = False
             except Exception:
                 pass
 
