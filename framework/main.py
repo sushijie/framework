@@ -269,7 +269,7 @@ class set:
 
         servers = {'db': 'mysqld', 'lb': ['nginx', 'keepalived'], 'web': ['nginx', 'php-fpm', 'nfs'],
                    'nfs': ['nfs', 'rsyncd'],
-                   'rsync': ['rpcbind', 'rsyncd'], 'zabbix': ['zabbix-agent', 'zabbix-server', 'httpd'], }
+                   'rsync': 'rsyncd', 'zabbix': ['zabbix-agent', 'zabbix-server', 'httpd'], }
         try:
             for ip in self.allip:
                 client = paramiko.SSHClient()
