@@ -289,7 +289,7 @@ class set:
         while wait:
             try:
                 res = os.popen('cat /root/.jenkins/workspace/sushijie/tmp|wc -l').read()
-                print(res,'in 7 job is finshed wait others for 40s')
+                print(res,'in 7 job is finshed wait others for 120s')
                 time.sleep(1)
                 if res < 7:
                     time.sleep(120)
