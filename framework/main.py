@@ -251,13 +251,17 @@ class set:
         f = open('result', mode='a', encoding="utf-8")
         def get_result(server,ip):
             stdin, stdout, stderr = client.exec_command('systemctl status %s' % server)
+
             res = re.findall(r'active \(\w+\)', stdout.read().decode())
-            res = res[0]
+            try:
+                res = res[0]
+            except Exception:
+                res = 'active (not find)'
+
             print('The server %s in %s is %s' % (server, ip, res))
             if res == 'active (running)':
                 return True
             else:
-
                 f.write('The server %s in %s is %s\n' % (server, ip, res))
 
         servers = {'db': 'mysqld', 'lb': ['nginx', 'keepalived'], 'web': ['nginx', 'php-fpm,nfs'],
@@ -269,11 +273,10 @@ class set:
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                 client.connect(hostname=ip[1], username='root', password='1')
                 servername = re.findall(r'\D+', ip[0])
-                if len(servers[servername[0]]) > 1:
+                if isinstance(servers[servername[0]], list):
                     for num in range(len(servers[servername[0]])):
                         server = servers[servername[0]][num]
                         get_result(server,ip[1])
-
                 else:
                     server = servers[servername]
                     get_result(server,ip[1])
