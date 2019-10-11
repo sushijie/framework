@@ -129,13 +129,11 @@ class set:
 
     def web01(self, path):
         database = path + 'database.php'
-
         wp = path + 'wp-config.php'
 
         dicdb = s.get_server(self.db)
 
         s.cheageip(database, dicdb)
-
         s.cheageip(wp, dicdb)
 
     def zabbix01(self, path):
@@ -294,7 +292,7 @@ class set:
                 print(res,'in 7 job is finshed wait others for 40s')
                 time.sleep(1)
                 if res < 7:
-                    time.sleep(40)
+                    time.sleep(120)
                 else:
                     wait = False
             except Exception:
