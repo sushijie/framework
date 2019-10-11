@@ -294,7 +294,7 @@ class set:
                 res = os.popen('cat /root/.jenkins/workspace/test/tmp|wc -l').read()
                 print(res,'in 6 job is finshed wait others for 10s')
                 time.sleep(1)
-                if res < 6:
+                if res < 7:
                     time.sleep(10)
                 else:
                     quit(0)
