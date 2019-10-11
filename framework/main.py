@@ -304,15 +304,15 @@ if __name__ == '__main__':
     net = ['net',
            '10.0.0.0']
     db = ['db',
-          ]
+          '10.0.0.168']
     lb = ['lb',
           ]
     nfs = ['nfs',
-           ]
+           '10.0.0.164']
     rsync = ['rsync',
-             ]
+             '10.0.0.105']
     web = ['web',
-           ]
+           '10.0.0.174']
     zabbix = ['zabbix',
               '10.0.0.170']
     ansible_path = '/etc/ansible/hosts'
