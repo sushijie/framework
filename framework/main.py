@@ -246,12 +246,15 @@ class set:
             return False
 
     def test(self):
+        try:
+            os.remove('result')
+        except Exception:
+            pass
         ip_txt = 'yaml/ip.txt'
         s.get_all_ip(ip_txt)
         f = open('result', mode='a', encoding="utf-8")
         def get_result(server,ip):
             stdin, stdout, stderr = client.exec_command('systemctl status %s' % server)
-
             res = re.findall(r'active \(\w+\)', stdout.read().decode())
             try:
                 res = res[0]
@@ -264,21 +267,23 @@ class set:
             else:
                 f.write('The server %s in %s is %s\n' % (server, ip, res))
 
-        servers = {'db': 'mysqld', 'lb': ['nginx', 'keepalived'], 'web': ['nginx', 'php-fpm,nfs'],
+        servers = {'db': 'mysqld', 'lb': ['nginx', 'keepalived'], 'web': ['nginx', 'php-fpm', 'nfs'],
                    'nfs': ['nfs', 'rsyncd'],
                    'rsync': ['rpcbind', 'rsyncd'], 'zabbix': ['zabbix-agent', 'zabbix-server', 'httpd'], }
         try:
             for ip in self.allip:
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
                 client.connect(hostname=ip[1], username='root', password='1')
                 servername = re.findall(r'\D+', ip[0])
                 if isinstance(servers[servername[0]], list):
                     for num in range(len(servers[servername[0]])):
+
                         server = servers[servername[0]][num]
                         get_result(server,ip[1])
                 else:
-                    server = servers[servername]
+                    server = servers[servername[0]]
                     get_result(server,ip[1])
                 client.close()
 
