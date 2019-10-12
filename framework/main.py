@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import os, sys, re, time,sys
+import os, sys, re, time, sys
 
 try:
     import paramiko
@@ -21,8 +21,6 @@ class set:
         self.rsync = rsync
         self.web = web
         self.zabbix = zabbix
-
-
 
     def get_server(self, server):
         lis1 = []
@@ -253,7 +251,8 @@ class set:
         ip_txt = 'yaml/ip.txt'
         s.get_all_ip(ip_txt)
         f = open('result', mode='a', encoding="utf-8")
-        def get_result(server,ip):
+
+        def get_result(server, ip):
             stdin, stdout, stderr = client.exec_command('systemctl status %s' % server)
             res = re.findall(r'active \(\w+\)', stdout.read().decode())
             try:
@@ -279,12 +278,11 @@ class set:
                 servername = re.findall(r'\D+', ip[0])
                 if isinstance(servers[servername[0]], list):
                     for num in range(len(servers[servername[0]])):
-
                         server = servers[servername[0]][num]
-                        get_result(server,ip[1])
+                        get_result(server, ip[1])
                 else:
                     server = servers[servername[0]]
-                    get_result(server,ip[1])
+                    get_result(server, ip[1])
                 client.close()
 
         except Exception as err:
@@ -296,8 +294,8 @@ class set:
         wait = True
         while wait:
             try:
-                res = os.popen('cat /root/.jenkins/workspace/sushijie/tmp|wc -l').read()
-                print(res,'in 7 job is finshed wait others for 120s')
+                res = int(os.popen('cat /root/.jenkins/workspace/sushijie/tmp|wc -l').read())
+                print(res, 'in 7 job is finshed wait others for 120s')
                 time.sleep(1)
                 if res < 7:
                     time.sleep(120)
@@ -305,6 +303,7 @@ class set:
                     wait = False
             except Exception:
                 pass
+
 
 if __name__ == '__main__':
     net = ['net',
@@ -351,4 +350,3 @@ if __name__ == '__main__':
             print('set-hostname false')
 
         print('All done')
-
