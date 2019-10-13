@@ -1,7 +1,11 @@
 pipeline{
     agent any
     stages{
-
+        stage('get_core'){
+            steps{
+                git 'https://github.com/sushijie/framework.git'
+            }
+        }
         stage('Setting'){
             steps{
                 sh "echo 'Setting' > tmp"
